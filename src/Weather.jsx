@@ -1,14 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CurrentWeather from './components/CurrentWeather';
 import ForecastList from './components/ForecastList';
+import Favorites from './components/Favorites';
 
 const Weather = () => {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem('favorites')) || [];
+    setFavorites(saved);
+  }, []);
+
+  const saveFavorites = (newFavorites) => {
+    setFavorites(newFavorites);
+    localStorage.setItem('favorites', JSON.stringify(newFavorites))
+  }
+
 
   const fetchWeather = async () => {
     if (!city) return;
@@ -60,24 +73,48 @@ const Weather = () => {
     }
   };
 
-  return (
-    <div>
-      <h1>Weather-App</h1>
-      <input
-        type="text"
-        placeholder="Search city..."
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && fetchWeather()}
-      />
-      <button onClick={fetchWeather}>Sök</button>
+   const handleSearch = () => {
+     if (!city) return;
+     fetchWeather(city);
+   };
 
-      {error && <p>{error}</p>}
+   const addFavorite = () => {
+     if (!city || favorites.includes(city)) return;
+     const updated = [...favorites, city];
+     saveFavorites(updated);
+   };
 
-      <CurrentWeather weather={weather} />
-      <ForecastList forecast={forecast} />
-    </div>
-  );
+   const removeFavorite = (fav) => {
+     const updated = favorites.filter((c) => c !== fav);
+     saveFavorites(updated);
+   };
+
+return (
+  <div>
+    <h1>Weather-App</h1>
+    <input
+      type="text"
+      placeholder="Search city..."
+      value={city}
+      onChange={(e) => setCity(e.target.value)}
+      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+    />
+    <button onClick={handleSearch}>Sök</button>
+    <button onClick={addFavorite}>Lägg till favorit</button>
+
+    {error && <p style={{ color: 'red' }}>{error}</p>}
+
+    {/* Favorit-komponenten */}
+    <Favorites
+      favorites={favorites}
+      onSelect={(fav) => fetchWeather(fav)}
+      onRemove={removeFavorite}
+    />
+
+    <CurrentWeather weather={weather} />
+    <ForecastList forecast={forecast} />
+  </div>
+);
 };
 
 export default Weather;
