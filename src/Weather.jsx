@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import SunIcon from './assets/icons/sun.png';
-import CloudIcon from './assets/icons/sun-cloud.png';
-import RainIcon from './assets/icons/rain2.png';
-import SnowIcon from './assets/icons/snow-cloud.png';
-import ThunderIcon from './assets/icons/thunderstorm.png';
+import CurrentWeather from './components/CurrentWeather';
+import ForecastList from './components/ForecastList';
 
 const Weather = () => {
   const [city, setCity] = useState('');
   const [weather, setWeather] = useState(null);
+  const [forecast, setForecast] = useState([]);
   const [error, setError] = useState(null);
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
@@ -18,45 +16,56 @@ const Weather = () => {
     try {
       setError(null);
       setWeather(null);
+      setForecast([]);
 
+      // 1️⃣ Hämta aktuellt väder
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=sv`
       );
 
       if (!response.ok) {
-        throw new Error('Stad hittades inte');
+        throw new Error('Kunde inte hämta väder');
       }
 
       const data = await response.json();
       setWeather(data);
+
+      // 2️⃣ När väderdata är hämtat, hämta även prognos
+      fetchForecast(city);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const getWeatherIcon = (main) => {
-    switch (main) {
-      case 'Clear':
-        return <img src={SunIcon} height={64} alt="sun" />;
-      case 'Clouds':
-        return <img src={CloudIcon} height={64} alt="clouds" />;
-      case 'Rain':
-        return <img src={RainIcon} height={64} alt="rain" />;
-      case 'Snow':
-        return <img src={SnowIcon} height={64} alt="snow" />;
-      case 'Thunderstorm':
-        return <img src={ThunderIcon} height={64} alt="thunder" />;
-      default:
-        return <img src={SunIcon} height={64} alt="sun" />;
+  const fetchForecast = async (cityName) => {
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric&lang=sv`
+      );
+
+      if (!response.ok) {
+        throw new Error('Kunde inte hämta prognos');
+      }
+
+      const data = await response.json();
+
+      // Filtrera ut ett värde per dag (kl 12:00)
+      const daily = data.list.filter((item) =>
+        item.dt_txt.includes('12:00:00')
+      );
+
+      setForecast(daily);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
     <div>
-      <h1>Väderapp</h1>
+      <h1>Weather-App</h1>
       <input
         type="text"
-        placeholder="Skriv stad..."
+        placeholder="Search city..."
         value={city}
         onChange={(e) => setCity(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && fetchWeather()}
@@ -65,18 +74,8 @@ const Weather = () => {
 
       {error && <p>{error}</p>}
 
-      {weather && (
-        <div>
-          <h2>
-            {weather.name}, {weather.sys.country}
-          </h2>
-          <p>Temperatur: {weather.main.temp} °C</p>
-          <p>Väder: {weather.weather[0].description}</p>
-          {getWeatherIcon(weather.weather[0].main)}
-          <p>Vind: {weather.wind.speed} m/s</p>
-          <p>Fuktighet: {weather.main.humidity} %</p>
-        </div>
-      )}
+      <CurrentWeather weather={weather} />
+      <ForecastList forecast={forecast} />
     </div>
   );
 };
