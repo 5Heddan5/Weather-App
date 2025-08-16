@@ -12,19 +12,22 @@ const Weather = () => {
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
+  // Ladda favoriter från localStorage vid start
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('favorites')) || [];
     setFavorites(saved);
   }, []);
 
+  //  Hjälpfunktion för att spara till både state och localStorage
   const saveFavorites = (newFavorites) => {
     setFavorites(newFavorites);
-    localStorage.setItem('favorites', JSON.stringify(newFavorites))
-  }
+    localStorage.setItem('favorites', JSON.stringify(newFavorites));
+  };
 
-
-  const fetchWeather = async () => {
-    if (!city) return;
+  // fetchWeathertar emot en stad (searchCity),
+  // annars används state.city som fallback
+  const fetchWeather = async (searchCity = city) => {
+    if (!searchCity) return;
 
     try {
       setError(null);
@@ -33,7 +36,7 @@ const Weather = () => {
 
       // 1️⃣ Hämta aktuellt väder
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=sv`
+        `https://api.openweathermap.org/data/2.5/weather?q=${searchCity}&appid=${apiKey}&units=metric&lang=sv`
       );
 
       if (!response.ok) {
@@ -44,12 +47,13 @@ const Weather = () => {
       setWeather(data);
 
       // 2️⃣ När väderdata är hämtat, hämta även prognos
-      fetchForecast(city);
+      fetchForecast(searchCity);
     } catch (err) {
       setError(err.message);
     }
   };
 
+  //  Hämta 5-dagarsprognos
   const fetchForecast = async (cityName) => {
     try {
       const response = await fetch(
@@ -73,48 +77,55 @@ const Weather = () => {
     }
   };
 
-   const handleSearch = () => {
-     if (!city) return;
-     fetchWeather(city);
-   };
+  const handleSearch = () => {
+    if (!city) return;
+    fetchWeather(city);
+  };
 
-   const addFavorite = () => {
-     if (!city || favorites.includes(city)) return;
-     const updated = [...favorites, city];
-     saveFavorites(updated);
-   };
 
-   const removeFavorite = (fav) => {
-     const updated = favorites.filter((c) => c !== fav);
-     saveFavorites(updated);
-   };
+  const addFavorite = () => {
+    if (!city || favorites.includes(city)) return;
+    const updated = [...favorites, city];
+    saveFavorites(updated);
+  };
 
-return (
-  <div>
-    <h1>Weather-App</h1>
-    <input
-      type="text"
-      placeholder="Search city..."
-      value={city}
-      onChange={(e) => setCity(e.target.value)}
-      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-    />
-    <button onClick={handleSearch}>Sök</button>
-    <button onClick={addFavorite}>Lägg till favorit</button>
+  const removeFavorite = (fav) => {
+    const updated = favorites.filter((c) => c !== fav);
+    saveFavorites(updated);
+  };
 
-    {error && <p style={{ color: 'red' }}>{error}</p>}
+  return (
+    <div>
+      <h1>Weather-App</h1>
+      <input
+        type="text"
+        placeholder="Search city..."
+        value={city}
+        onChange={(e) => setCity(e.target.value)}
+        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+      />
+      <button onClick={handleSearch}>Sök</button>
+      <button onClick={addFavorite}>Lägg till favorit</button>
 
-    {/* Favorit-komponenten */}
-    <Favorites
-      favorites={favorites}
-      onSelect={(fav) => fetchWeather(fav)}
-      onRemove={removeFavorite}
-    />
+      {/* Visa ev. felmeddelanden */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
 
-    <CurrentWeather weather={weather} />
-    <ForecastList forecast={forecast} />
-  </div>
-);
+      {/* Favoriter: när man klickar på en favorit
+          så uppdateras input + vädret hämtas direkt */}
+      <Favorites
+        favorites={favorites}
+        onSelect={(fav) => {
+          setCity(fav); // uppdaterar inputfältet
+          fetchWeather(fav); // hämtar vädret direkt (ingen knapp behövs)
+        }}
+        onRemove={removeFavorite}
+      />
+
+      {/* Visa aktuellt väder + prognos */}
+      <CurrentWeather weather={weather} />
+      <ForecastList forecast={forecast} />
+    </div>
+  );
 };
 
 export default Weather;

@@ -4,11 +4,13 @@ export default function Favorites({ favorites, onSelect, onRemove }) {
   return (
     <div style={{ marginTop: '1rem' }}>
       <h3>Mina favoriter</h3>
-      <ul>
+      <ul data-cy="favorites-list">
         {favorites.map((city) => (
           <li key={city}>
             <button onClick={() => onSelect(city)}>{city}</button>
-            <button onClick={() => onRemove(city)}>❌</button>
+            <button data-cy="remove-fav" onClick={() => onRemove(city)}>
+              X
+            </button>
           </li>
         ))}
       </ul>
