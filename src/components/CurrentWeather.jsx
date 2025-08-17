@@ -1,6 +1,7 @@
 import WeatherIcon from './WeatherIcon';
+import '../css/CurrentWeather.css';
 
-export default function CurrentWeather({ weather }) {
+export default function CurrentWeather({ weather, displayCity }) {
   if (!weather) return null;
 
   const formatTime = (timestamp) =>
@@ -12,12 +13,20 @@ export default function CurrentWeather({ weather }) {
   return (
     <div>
       <h2>
-        {weather.name}, {weather.sys.country}
+        {displayCity}, {weather.sys.country}
       </h2>
-      <p>Tempratur: {weather.main.temp} °C</p>
+
+      <p>Temperatur: {weather.main.temp} °C</p>
       <p>Känns som: {weather.main.feels_like} °C</p>
       <p>Väder: {weather.weather[0].description}</p>
-      <WeatherIcon main={weather.weather[0].main} />
+
+      <div
+        className="weather-icon-wrapper"
+        data-weather={weather.weather[0].main}
+      >
+        <WeatherIcon main={weather.weather[0].main} />
+      </div>
+
       <p>Vind: {weather.wind.speed} m/s</p>
       <p>Fuktighet: {weather.main.humidity} %</p>
       <p>Lufttryck: {weather.main.pressure} hPa</p>

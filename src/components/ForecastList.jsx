@@ -1,4 +1,3 @@
-// src/components/ForecastList.jsx
 import WeatherIcon from './WeatherIcon';
 
 export default function ForecastList({ forecast }) {

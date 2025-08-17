@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import CurrentWeather from './components/CurrentWeather';
 import ForecastList from './components/ForecastList';
 import Favorites from './components/Favorites';
+import './css/Weather.css';
 
 const Weather = () => {
   const [city, setCity] = useState('');
+  const [displayCity, setDisplayCity] = useState('');
   const [weather, setWeather] = useState(null);
   const [forecast, setForecast] = useState([]);
   const [error, setError] = useState(null);
@@ -12,20 +14,25 @@ const Weather = () => {
 
   const apiKey = import.meta.env.VITE_WEATHER_API_KEY;
 
+  // Hjälpfunktion för att formatera städer med stor bokstav
+  const capitalizeCity = (name) => {
+    if (!name) return '';
+    return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+  };
+
   // Ladda favoriter från localStorage vid start
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('favorites')) || [];
-    setFavorites(saved);
+    // Formatera alla favoriter vid load
+    setFavorites(saved.map(capitalizeCity));
   }, []);
 
-  //  Hjälpfunktion för att spara till både state och localStorage
+  // Hjälpfunktion för att spara till både state och localStorage
   const saveFavorites = (newFavorites) => {
     setFavorites(newFavorites);
     localStorage.setItem('favorites', JSON.stringify(newFavorites));
   };
 
-  // fetchWeathertar emot en stad (searchCity),
-  // annars används state.city som fallback
   const fetchWeather = async (searchCity = city) => {
     if (!searchCity) return;
 
@@ -53,7 +60,7 @@ const Weather = () => {
     }
   };
 
-  //  Hämta 5-dagarsprognos
+  // Hämta 5-dagars prognos
   const fetchForecast = async (cityName) => {
     try {
       const response = await fetch(
@@ -79,13 +86,15 @@ const Weather = () => {
 
   const handleSearch = () => {
     if (!city) return;
+    setDisplayCity(capitalizeCity(city)); // Formatera staden med stor bokstav
     fetchWeather(city);
   };
 
-
   const addFavorite = () => {
-    if (!city || favorites.includes(city)) return;
-    const updated = [...favorites, city];
+    if (!city) return;
+    const formattedCity = capitalizeCity(city);
+    if (favorites.includes(formattedCity)) return;
+    const updated = [...favorites, formattedCity];
     saveFavorites(updated);
   };
 
@@ -97,9 +106,10 @@ const Weather = () => {
   return (
     <div>
       <h1>Weather-App</h1>
+
       <input
         type="text"
-        placeholder="Search city..."
+        placeholder="Sök stad..."
         value={city}
         onChange={(e) => setCity(e.target.value)}
         onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -107,22 +117,19 @@ const Weather = () => {
       <button onClick={handleSearch}>Sök</button>
       <button onClick={addFavorite}>Lägg till favorit</button>
 
-      {/* Visa ev. felmeddelanden */}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* Favoriter: när man klickar på en favorit
-          så uppdateras input + vädret hämtas direkt */}
       <Favorites
         favorites={favorites}
         onSelect={(fav) => {
-          setCity(fav); // uppdaterar inputfältet
-          fetchWeather(fav); // hämtar vädret direkt (ingen knapp behövs)
+          setCity(fav);
+          setDisplayCity(fav);
+          fetchWeather(fav);
         }}
         onRemove={removeFavorite}
       />
 
-      {/* Visa aktuellt väder + prognos */}
-      <CurrentWeather weather={weather} />
+      <CurrentWeather weather={weather} displayCity={displayCity} />
       <ForecastList forecast={forecast} />
     </div>
   );
