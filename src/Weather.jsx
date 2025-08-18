@@ -92,6 +92,26 @@ const Weather = () => {
     saveFavorites(favorites.filter((c) => c !== fav));
   };
 
+  //  Kolla plats automatiskt vid start
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        const { latitude, longitude } = pos.coords;
+        try {
+          const response = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=sv`
+          );
+          const data = await response.json();
+          setWeather(data);
+          setDisplayCity(capitalizeCity(data.name));
+          fetchForecast(data.name);
+        } catch (err) {
+          console.error('Kunde inte hämta platsens väder:', err);
+        }
+      });
+    }
+  }, []);
+
   return (
     <div>
       <h1>WeatherNow</h1>
