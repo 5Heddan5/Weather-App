@@ -5,7 +5,7 @@ describe('Favorites feature', () => {
   });
 
   it('should allow adding Lund as a favorite', () => {
-    cy.get('input[placeholder="Search city..."]').type('lund');
+    cy.get('input[placeholder="Sök stad..."]').type('lund');
 
     cy.contains('Sök').click();
 
@@ -17,8 +17,7 @@ describe('Favorites feature', () => {
   });
 
 it('should allow removing Lund from favorites', () => {
-  // Lägg till 'lund' som favorit igen
-  cy.get('input[placeholder="Search city..."]').type('lund');
+  cy.get('input[placeholder="Sök stad..."]').type('lund');
   cy.contains('Sök').click();
   cy.contains('Lägg till favorit').click();
 

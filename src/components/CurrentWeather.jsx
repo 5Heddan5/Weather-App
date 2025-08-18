@@ -11,27 +11,42 @@ export default function CurrentWeather({ weather, displayCity }) {
     });
 
   return (
-    <div>
-      <h2>
-        {displayCity}, {weather.sys.country}
-      </h2>
+    <div className="current-weather">
+      <div className="weather-flex">
+        <div className="weather-left">
+          <h2>
+            {displayCity}, {weather.sys.country}
+          </h2>
 
-      <p>Temperatur: {weather.main.temp} °C</p>
-      <p>Känns som: {weather.main.feels_like} °C</p>
-      <p>Väder: {weather.weather[0].description}</p>
+          <div
+            className="weather-icon-wrapper"
+            data-weather={weather.weather[0].main}
+          >
+            <WeatherIcon main={weather.weather[0].main} />
+          </div>
 
-      <div
-        className="weather-icon-wrapper"
-        data-weather={weather.weather[0].main}
-      >
-        <WeatherIcon main={weather.weather[0].main} />
+          <p className="current-temp">{Math.round(weather.main.temp)}°C</p>
+          <p className="feels-like">
+            Känns som: {Math.round(weather.main.feels_like)}°C
+          </p>
+          <p className="description">{weather.weather[0].description}</p>
+        </div>
+
+        <div className="details-right">
+          <div className="detail-card">
+            <p>Vind</p>
+            <p>{Math.round(weather.wind.speed)} m/s</p>
+          </div>
+          <div className="detail-card">
+            <p>Soluppgång</p>
+            <p>{formatTime(weather.sys.sunrise)}</p>
+          </div>
+          <div className="detail-card">
+            <p>Solnedgång</p>
+            <p>{formatTime(weather.sys.sunset)}</p>
+          </div>
+        </div>
       </div>
-
-      <p>Vind: {weather.wind.speed} m/s</p>
-      <p>Fuktighet: {weather.main.humidity} %</p>
-      <p>Lufttryck: {weather.main.pressure} hPa</p>
-      <p>Soluppgång: {formatTime(weather.sys.sunrise)}</p>
-      <p>Solnedgång: {formatTime(weather.sys.sunset)}</p>
     </div>
   );
 }

@@ -1,0 +1,24 @@
+.hourly-forecast {
+  display: flex;
+  justify-content: space-between; 
+  padding: 4px 0;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.hourly-forecast div {
+  text-align: center;
+  font-size: 0.8rem;
+  min-width: 30px;
+
+}
+
+.hourly-forecast .hour {
+  margin: 2px 0;
+}
+
+.hourly-forecast .temp {
+  margin: 2px 0;
+  font-weight: bold;
+}

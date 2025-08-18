@@ -1,43 +1,127 @@
+.current-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: sans-serif;
+  color: #fff;
+}
+
+.weather-flex {
+  margin-top: 2rem;
+  display: flex;
+  gap: 2rem;
+  align-items: stretch; 
+}
+
+.weather-left {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.8rem; 
+  border-radius: 16px;
+  min-width: 280px;
+  gap: 0.2rem; 
+}
+
+.weather-left h2 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.weather-left .current-temp {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.weather-left .feels-like,
+.weather-left .description {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.details-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .weather-icon-wrapper {
   position: relative;
   display: inline-block;
   border-radius: 50%;
-  padding: 20px; /* utrymme för glöden */
+  padding: 20px;
 }
 
-/* Diffus gradient bakom ikonen */
 .weather-icon-wrapper::before {
   content: '';
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 150px;   /* större för mer effekt */
-  height: 150px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 183, 77, 0.4) 0%, rgba(10, 20, 50, 0.05) 70%);
-  filter: blur(20px);
+  background: radial-gradient(
+    circle,
+    rgba(255, 183, 77, 0.4) 0%,
+    rgba(10, 20, 50, 0.05) 70%
+  );
+  filter: blur(25px);
   z-index: -1;
   pointer-events: none;
 }
 
-/* Olika väder kan ha olika färgtoner */
-.weather-icon-wrapper[data-weather="Clear"]::before {
-  background: radial-gradient(circle, rgba(255, 183, 77, 0.45) 0%, rgba(10, 20, 50, 0.05) 70%);
+.weather-icon-wrapper[data-weather='Clear']::before {
+  background: radial-gradient(
+    circle,
+    rgba(255, 183, 77, 0.45) 0%,
+    rgba(10, 20, 50, 0.05) 70%
+  );
 }
 
-.weather-icon-wrapper[data-weather="Clouds"]::before {
-  background: radial-gradient(circle, rgba(176, 196, 222, 0.45) 0%, rgba(10, 20, 50, 0.05) 70%);
+.weather-icon-wrapper img {
+  width: 150px;
+  height: 150px;
+  object-fit: contain; 
 }
 
-.weather-icon-wrapper[data-weather="Rain"]::before {
-  background: radial-gradient(circle, rgba(65, 88, 208, 0.45) 0%, rgba(10, 20, 50, 0.05) 70%);
+.weather-icon-wrapper i {
+  font-size: 6rem;
 }
 
-.weather-icon-wrapper[data-weather="Snow"]::before {
-  background: radial-gradient(circle, rgba(240, 248, 255, 0.45) 0%, rgba(10, 20, 50, 0.05) 70%);
+h2 {
+  font-size: 2.5rem;
 }
 
-.weather-icon-wrapper[data-weather="Thunderstorm"]::before {
-  background: radial-gradient(circle, rgba(138, 43, 226, 0.45) 0%, rgba(10, 20, 50, 0.05) 70%);
+.current-temp {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.feels-like,
+.description {
+  font-size: 1rem;
+}
+
+/* Detaljblock */
+.detail-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 100px;
+}
+
+.detail-card p:first-child {
+  font-size: 0.9rem;
+  margin-bottom: 0.2rem;
+  color: #ccc;
+}
+
+.detail-card p:last-child {
+  font-size: 1.2rem;
+  font-weight: bold;
 }

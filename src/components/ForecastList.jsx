@@ -1,4 +1,5 @@
 import WeatherIcon from './WeatherIcon';
+import '../css/ForecastList.css';
 
 export default function ForecastList({ forecast }) {
   if (!forecast || forecast.length === 0) return null;
@@ -6,7 +7,7 @@ export default function ForecastList({ forecast }) {
   return (
     <div>
       <h3>5-dagars prognos</h3>
-      <div style={{ display: 'flex', gap: '1rem' }}>
+      <div className="forecast-list" >
         {forecast.map((day) => (
           <div key={day.dt}>
             <p>
@@ -16,7 +17,6 @@ export default function ForecastList({ forecast }) {
             </p>
             <WeatherIcon main={day.weather[0].main} size={48} />
             <p>{Math.round(day.main.temp)} °C</p>
-            <p style={{ fontSize: '0.8rem' }}>{day.weather[0].description}</p>
           </div>
         ))}
       </div>
