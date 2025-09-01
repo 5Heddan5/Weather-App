@@ -3,6 +3,7 @@ import CurrentWeather from './components/CurrentWeather';
 import HourlyForecast from './components/HourlyForecast';
 import ForecastList from './components/ForecastList';
 import Favorites from './components/Favorites';
+import { validateCity } from './utils/validateCity';
 
 import './css/Weather.css';
 
@@ -30,6 +31,7 @@ const Weather = () => {
     localStorage.setItem('favorites', JSON.stringify(newFavorites));
   };
 
+  // Hämtar väder baserat på stadens namn (används vid sök och favoriter)
   const fetchWeather = async (searchCity = city) => {
     if (!searchCity) return;
 
@@ -47,17 +49,20 @@ const Weather = () => {
       const data = await response.json();
       setWeather(data);
 
-      // Hämta prognos
-      fetchForecast(searchCity);
+      setDisplayCity(capitalizeCity(searchCity));
+
+      // Hämta prognos via lat/lon
+      fetchForecast(data.coord.lat, data.coord.lon);
     } catch (err) {
       setError(err.message);
     }
   };
 
-  const fetchForecast = async (cityName) => {
+  // Hämtar prognos baserat på lat/lon
+  const fetchForecast = async (lat, lon) => {
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${cityName}&appid=${apiKey}&units=metric&lang=sv`
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${apiKey}&units=metric&lang=sv`
       );
       if (!response.ok) throw new Error('Kunde inte hämta prognos');
       const data = await response.json();
@@ -76,7 +81,12 @@ const Weather = () => {
   };
 
   const handleSearch = () => {
-    if (!city) return;
+    const validationError = validateCity(city);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setDisplayCity(capitalizeCity(city));
     fetchWeather(city);
   };
@@ -92,7 +102,7 @@ const Weather = () => {
     saveFavorites(favorites.filter((c) => c !== fav));
   };
 
-  //  Kolla plats automatiskt vid start
+  // Hämta plats automatiskt vid start
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(async (pos) => {
@@ -103,8 +113,12 @@ const Weather = () => {
           );
           const data = await response.json();
           setWeather(data);
-          setDisplayCity(capitalizeCity(data.name));
-          fetchForecast(data.name);
+
+          // Visa staden från API (kan vara "Malmo" istället för "Malmö")
+          setDisplayCity(data.name);
+
+          // Prognosen hämtas säkert med lat/lon → blir aldrig Stockholm av misstag
+          fetchForecast(latitude, longitude);
         } catch (err) {
           console.error('Kunde inte hämta platsens väder:', err);
         }
