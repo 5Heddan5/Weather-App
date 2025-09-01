@@ -4,9 +4,8 @@ import HourlyForecast from './components/HourlyForecast';
 import ForecastList from './components/ForecastList';
 import Favorites from './components/Favorites';
 import { validateCity } from './utils/validateCity';
-
-import './css/Weather.css';
-
+import './css/Search.css';
+import './css/Favorites.css'
 const Weather = () => {
   const [city, setCity] = useState('');
   const [displayCity, setDisplayCity] = useState('');
@@ -130,15 +129,17 @@ const Weather = () => {
     <div>
       <h1>WeatherNow</h1>
 
-      <input
-        type="text"
-        placeholder="Sök stad..."
-        value={city}
-        onChange={(e) => setCity(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-      />
-      <button onClick={handleSearch}>Sök</button>
-      <button onClick={addFavorite}>Lägg till favorit</button>
+      <div className="search-section">
+        <input
+          type="text"
+          placeholder="Sök stad..."
+          value={city}
+          onChange={(e) => setCity(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+        />
+        <button onClick={handleSearch}>Sök</button>
+        <button onClick={addFavorite}>Lägg till favorit</button>
+      </div>
 
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
