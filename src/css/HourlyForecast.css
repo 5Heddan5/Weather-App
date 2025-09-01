@@ -22,3 +22,16 @@
   margin: 2px 0;
   font-weight: bold;
 }
+
+
+@media (max-width: 480px) {
+  .hourly-forecast {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .hourly-forecast div {
+    flex: 1 1 30%;
+    min-width: 60px;
+  }
+}

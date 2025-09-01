@@ -50,3 +50,16 @@
   transform: scale(1.2);
   color: #ff4b4b;
 }
+
+
+@media (max-width: 768px) {
+  .favorites-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .favorites-list {
+    grid-template-columns: 1fr;
+  }
+}

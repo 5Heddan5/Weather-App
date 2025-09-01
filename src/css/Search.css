@@ -7,6 +7,7 @@
   border-radius: 12px;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap; 
 }
 
 .search-section input {
@@ -17,10 +18,7 @@
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
   font-size: 1rem;
-}
-
-.search-section input::placeholder {
-  color: #ccc;
+  min-width: 120px; 
 }
 
 .search-section button {
@@ -30,6 +28,8 @@
   cursor: pointer;
   font-weight: bold;
   transition: background 0.2s ease;
+  flex: none; 
+  min-width: 100px; 
 }
 
 .search-section button:first-of-type {
@@ -48,4 +48,17 @@
 
 .search-section button:last-of-type:hover {
   background: rgba(255, 183, 77, 0.9);
+}
+
+@media (max-width: 480px) {
+  .search-section {
+    flex-direction: column; 
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  .search-section input,
+  .search-section button {
+    width: 100%; 
+  }
 }
