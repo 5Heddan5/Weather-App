@@ -4,6 +4,9 @@ WeatherNow är en väderapplikation byggd med React som hämtar data från OpenW
 
 ---
 
+## Skärmbild
+![WeatherNow Desktop](src/assets/icons/WeatherApp.png)
+
 ## Funktioner och utvecklingssteg
 
 1. **Sökfunktion**
